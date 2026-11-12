@@ -233,7 +233,7 @@
   .checks{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:30px}
   .checks span{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;padding:8px 14px;border-radius:999px;background:rgba(217,180,92,.12);color:var(--bone);border:1px solid rgba(217,180,92,.3)}
   .checks svg{color:var(--gold)}
-  .vid{position:relative;width:100%;max-width:880px;margin:0 auto 38px;aspect-ratio:16/9;border-radius:10px;overflow:hidden;border:1px solid var(--hair-dark);background:#0C1322;box-shadow:0 40px 90px -40px rgba(0,0,0,.8)}
+  .vid{position:relative;width:100%;max-width:380px;margin:0 auto 38px;aspect-ratio:9/16;border-radius:10px;overflow:hidden;border:1px solid var(--hair-dark);background:#0C1322;box-shadow:0 40px 90px -40px rgba(0,0,0,.8)}
   .vid iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
   .vid .ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted-on-navy);font-size:14px;letter-spacing:.14em;text-transform:uppercase}
   .under{margin-top:16px;font-size:13px;color:var(--muted-on-navy);letter-spacing:.04em}
@@ -464,7 +464,7 @@
 <div class="lb" id="lb" aria-hidden="true"><button class="lb-close" id="lbClose" aria-label="Close">&times;</button><img id="lbImg" src="" alt=""></div>
 <script>
   // Paste the YouTube video ID between the quotes (the part after "v=" or "youtu.be/")
-  const VIDEO_ID = "";
+  const VIDEO_ID = "em9yR-2OD60";
   if (VIDEO_ID) {
     document.getElementById('vid').innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/' + VIDEO_ID + '?rel=0&modestbranding=1" title="The 6-week ads program" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
   }

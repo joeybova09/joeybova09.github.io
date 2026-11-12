@@ -235,6 +235,19 @@
   .checks svg{color:var(--gold)}
   .vid{position:relative;width:100%;max-width:380px;margin:0 auto 38px;aspect-ratio:9/16;border-radius:10px;overflow:hidden;border:1px solid var(--hair-dark);background:#0C1322;box-shadow:0 40px 90px -40px rgba(0,0,0,.8)}
   .vid iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+  .vid video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;cursor:pointer;background:#0C1322}
+  .vsl-unmute{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:rgba(17,26,46,.35);border:0;color:var(--navy-deep);cursor:pointer;font-family:inherit;padding:0}
+  .vsl-unmute .vsl-badge{width:74px;height:74px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 0 rgba(217,180,92,.6);animation:vslPulse 1.8s infinite;margin-bottom:8px}
+  .vsl-unmute .vsl-t1,.vsl-unmute .vsl-t2{background:var(--gold);color:var(--navy-deep);font-weight:700;padding:6px 14px;border-radius:999px;font-size:14px}
+  .vsl-unmute .vsl-t1{background:rgba(17,26,46,.85);color:var(--bone);font-weight:600;font-size:13px}
+  @keyframes vslPulse{0%{box-shadow:0 0 0 0 rgba(217,180,92,.55)}70%{box-shadow:0 0 0 22px rgba(217,180,92,0)}100%{box-shadow:0 0 0 0 rgba(217,180,92,0)}}
+  .vsl-unmute.off{display:none}
+  .vsl-paused{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(17,26,46,.35);pointer-events:none}
+  .vsl-paused span{width:72px;height:72px;border-radius:50%;background:rgba(17,26,46,.8);color:var(--gold);display:flex;align-items:center;justify-content:center;padding-left:4px}
+  .vsl-paused.on{display:flex}
+  .vsl-bar{position:absolute;left:0;right:0;bottom:0;height:5px;background:rgba(243,241,234,.18);opacity:0;transition:opacity .3s}
+  .vsl-bar.on{opacity:1}
+  .vsl-bar i{display:block;height:100%;width:0;background:var(--gold)}
   .vid .ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted-on-navy);font-size:14px;letter-spacing:.14em;text-transform:uppercase}
   .under{margin-top:16px;font-size:13px;color:var(--muted-on-navy);letter-spacing:.04em}
   .under b{color:var(--gold);font-weight:600}
@@ -309,7 +322,16 @@
       <h1 class="reveal">Build your own Meta ads system in 6 weeks <span class="it foil">and stop renting results from an agency.</span></h1>
       <p class="watch reveal">Watch the video below to see how it works.</p>
       <div class="checks reveal"><span><svg viewBox="0 0 16 16" width="13" height="13"><path d="M3 8.5l3 3 7-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Built inside your own account</span><span><svg viewBox="0 0 16 16" width="13" height="13"><path d="M3 8.5l3 3 7-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Your current ads keep running</span></div>
-      <div class="vid reveal" id="vid"><div class="ph">Video coming soon</div></div>
+      <div class="vid reveal" id="vid">
+        <video id="vsl" src="vsl.mp4" poster="vsl-poster.jpg" muted autoplay playsinline preload="auto"></video>
+        <button class="vsl-unmute" id="vslUnmute" type="button" aria-label="Turn on sound and start from the beginning">
+          <span class="vsl-badge"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M23 9l-6 6M17 9l6 6"/></svg></span>
+          <span class="vsl-t1">Your video is playing</span>
+          <span class="vsl-t2">Click to turn on sound</span>
+        </button>
+        <div class="vsl-paused" id="vslPaused"><span><svg viewBox="0 0 24 24" width="34" height="34" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span></div>
+        <div class="vsl-bar"><i id="vslBar"></i></div>
+      </div>
       <div class="reveal"><a href="https://calendly.com/joeybova/program-call" target="_blank" rel="noopener" class="btn btn-gold btn-lg">Get Your Free Ads Breakdown</a></div>
       <p class="under reveal"><b>3 founding client spots</b> · ecommerce brands doing $10k to $50k a month</p>
     </div>
@@ -463,11 +485,29 @@
 </footer>
 <div class="lb" id="lb" aria-hidden="true"><button class="lb-close" id="lbClose" aria-label="Close">&times;</button><img id="lbImg" src="" alt=""></div>
 <script>
-  // Paste the YouTube video ID between the quotes (the part after "v=" or "youtu.be/")
-  const VIDEO_ID = "em9yR-2OD60";
-  if (VIDEO_ID) {
-    document.getElementById('vid').innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/' + VIDEO_ID + '?rel=0&modestbranding=1" title="The 6-week ads program" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
-  }
+  // Sales video player: muted autoplay, click for sound, fast-start progress bar
+  (function(){
+    const v=document.getElementById('vsl'), btn=document.getElementById('vslUnmute'),
+          bar=document.getElementById('vslBar'), barWrap=bar.parentElement, paused=document.getElementById('vslPaused');
+    let live=false;
+    v.play().catch(()=>{});
+    btn.addEventListener('click',()=>{
+      live=true; btn.classList.add('off'); barWrap.classList.add('on');
+      v.currentTime=0; v.muted=false; v.loop=false; v.play().catch(()=>{});
+    });
+    v.addEventListener('click',()=>{
+      if(!live) return btn.click();
+      if(v.paused){v.play();}else{v.pause();}
+    });
+    v.addEventListener('play',()=>paused.classList.remove('on'));
+    v.addEventListener('pause',()=>{ if(live && !v.ended) paused.classList.add('on'); });
+    v.addEventListener('ended',()=>{ if(!live){v.currentTime=0;v.play().catch(()=>{});} else {paused.classList.add('on');} });
+    v.addEventListener('timeupdate',()=>{
+      if(!live||!v.duration) return;
+      const t=v.currentTime/v.duration, shown=1-Math.pow(1-t,2.2);
+      bar.style.width=(shown*100).toFixed(2)+'%';
+    });
+  })();
 
   const hdr = document.getElementById('hdr');
   const setHdr = () => hdr.classList.toggle('scrolled', window.scrollY > window.innerHeight * 0.72);

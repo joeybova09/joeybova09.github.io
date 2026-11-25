@@ -626,9 +626,9 @@ y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
   .bq-opt b{flex:none;width:26px;height:26px;border-radius:7px;border:1px solid var(--hair-dark);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--muted-on-navy);font-weight:600}
   .bq-back{margin-top:14px;background:none;border:none;color:var(--muted-on-navy);font:inherit;font-size:14px;cursor:pointer;padding:4px 0}
   .bq-note{font-size:15px;color:var(--muted-on-navy);line-height:1.6;margin-bottom:18px}
-  .bq-cal{background:#fff;border-radius:10px;overflow:hidden;min-height:660px}
-  .bq-cal .calendly-inline-widget{min-width:280px;height:680px}
-  @media (max-width:640px){.bq{padding:0;align-items:stretch}.bq-panel,.bq-panel.wide{max-width:none;max-height:none;height:100%;border-radius:0;padding:22px 18px 18px}.bq-q{font-size:21px}.bq-cal .calendly-inline-widget{height:calc(100vh - 150px);min-height:560px}}
+  .bq-cal{background:#fff;border-radius:10px;overflow:hidden;height:680px}
+  .bq-cal iframe{display:block;width:100%;height:100%}
+  @media (max-width:640px){.bq{padding:0;align-items:stretch}.bq-panel,.bq-panel.wide{max-width:none;max-height:none;height:100%;border-radius:0;padding:22px 18px 18px}.bq-q{font-size:21px}.bq-cal{height:calc(100vh - 150px);min-height:560px}}
 </style>
 <div class="bq" id="bq" role="dialog" aria-modal="true" aria-label="Book your free ads breakdown">
   <div class="bq-panel" id="bqPanel">
@@ -676,7 +676,7 @@ y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
     body.innerHTML='<div class="bq-step">Last step</div><div class="bq-q">Pick a time for your free ads breakdown</div><div class="bq-cal" id="bqCal"></div><button type="button" class="bq-back" id="bqBack">&larr; Back</button>';
     document.getElementById('bqBack').addEventListener('click',function(){step=Q.length-1;render();});
     var p=new URLSearchParams(location.search);
-    var opts={url:CAL+'?hide_gdpr_banner=1',parentElement:document.getElementById('bqCal'),
+    var opts={url:CAL+'?hide_gdpr_banner=1&a4='+encodeURIComponent(ans.rev||'')+'&a5='+encodeURIComponent(ans.spend||''),parentElement:document.getElementById('bqCal'),
       prefill:{customAnswers:{a4:ans.rev||'',a5:ans.spend||''}},
       utm:{utmSource:p.get('utm_source')||'site',utmMedium:p.get('utm_medium')||'',utmCampaign:p.get('utm_campaign')||'',utmContent:'who: '+(ans.who||''),utmTerm:'problem: '+(ans.prob||'')}};
     function go(){window.Calendly.initInlineWidget(opts);}

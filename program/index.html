@@ -314,6 +314,18 @@
   @media (max-width:900px){.grid3,.tools{grid-template-columns:1fr}.split{grid-template-columns:1fr;gap:36px}.split img{max-width:420px}}
   @media (max-width:900px){.tools{grid-template-columns:1fr 1fr;gap:12px}.tool .art{height:64px;font-size:17px;padding:0 10px}.tool .body{padding:12px 12px 14px}.tool .meta{font-size:9px;letter-spacing:.1em;margin-bottom:6px}.tool .tag{font-size:9px;padding:3px 6px}.tool h3{font-size:14px;line-height:1.25}.tool p{font-size:12.5px;line-height:1.4}}
   @media (max-width:640px){.stack{padding:28px 20px}.row{font-size:15px}.row .ln{display:none}.row span:first-child{flex:1}.guarbox{padding:34px 22px}.final .panel{padding:30px 22px}}
+
+  /* mobile hero: video on the first screen */
+  @media (max-width:640px){
+    .hero.prog{padding:96px 0 56px}
+    .hero.prog .hero-inner{display:flex;flex-direction:column;align-items:center}
+    .hero.prog .pill,.hero.prog .watch{display:none}
+    .hero.prog h1{order:1;font-size:30px;line-height:1.08;margin:0 auto 18px;max-width:17ch}
+    .hero.prog .vid{order:2;max-width:300px;margin:0 auto 22px}
+    .hero.prog .hero-inner>div.reveal:not(.vid):not(.checks){order:3}
+    .hero.prog .under{order:4}
+    .hero.prog .checks{order:5;margin:22px 0 0}
+  }
 </style>
 <!-- Meta Pixel -->
 <script>

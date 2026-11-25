@@ -42,9 +42,9 @@
   .btn-lg{padding:17px 32px;font-size:15px}
   .btn-primary{background:var(--navy);color:var(--bone)}
   .btn-primary:hover{background:var(--navy-deep);transform:translateY(-1px)}
-  .btn-gold{background:var(--gold);color:var(--navy-deep);border-color:var(--gold);animation:goldPulse 2.6s ease-in-out infinite}
-  .btn-gold:hover{background:#E6C877;border-color:#E6C877;transform:translateY(-1px);animation-play-state:paused;box-shadow:0 0 42px 4px rgba(217,180,92,.85)}
-  @keyframes goldPulse{0%,100%{box-shadow:0 0 18px 0 rgba(217,180,92,.42)}50%{box-shadow:0 0 34px 3px rgba(217,180,92,.78)}}
+  .btn-gold{background:var(--gold);color:var(--navy-deep);border-color:var(--gold);animation:goldPulse 2.2s ease-in-out infinite}
+  .btn-gold:hover{background:#E6C877;border-color:#E6C877;transform:translateY(-1px);animation-play-state:paused;box-shadow:0 0 56px 12px rgba(217,180,92,1),0 0 130px 30px rgba(217,180,92,.5)}
+  @keyframes goldPulse{0%,100%{box-shadow:0 0 22px 4px rgba(226,170,48,.65),0 0 60px 12px rgba(226,170,48,.3)}50%{box-shadow:0 0 38px 10px rgba(226,170,48,.95),0 0 95px 28px rgba(226,170,48,.5)}}
   .textlink{font-size:15px;font-weight:500;border-bottom:1px solid rgba(237,234,224,.35);padding-bottom:2px;transition:border-color .2s}
   .textlink:hover{border-color:var(--gold)}
   .textlink .arrow{display:inline-block;transition:transform .2s}
@@ -68,7 +68,8 @@
   header.scrolled .nav-links a{color:var(--ink)}
   header.scrolled .logo .logo-bone{display:none}
   header.scrolled .logo .logo-navy{display:block}
-  .nav .btn{padding:10px 20px}
+  .nav .btn{padding:10px 20px;animation:goldPulse 2.2s ease-in-out infinite}
+  header:not(.scrolled) .nav .btn{border-color:var(--gold);color:var(--gold)}
 
   /* hero */
   .hero{position:relative;background:var(--navy-deep);color:var(--paper-on-navy);min-height:100svh;display:flex;align-items:center;padding:120px 0 80px;overflow:hidden}
@@ -230,7 +231,7 @@
     .reveal{opacity:1;transform:none;transition:none}
     .hero-scroll .bar{animation:none}
     .btn,.wcard,.textlink .arrow{transition:none}
-    .btn-gold{animation:none;box-shadow:0 0 22px 0 rgba(217,180,92,.5)}
+    .btn-gold{animation:none;box-shadow:0 0 34px 6px rgba(217,180,92,.75),0 0 80px 16px rgba(217,180,92,.3)}
   }
 
   .center{text-align:center}

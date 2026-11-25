@@ -609,5 +609,97 @@ y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
   document.addEventListener('keydown',e=>{if(e.key==='Escape')closeLb();});}
 
 </script>
+<!-- booking quiz -->
+<style>
+  .bq{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;background:rgba(10,15,28,.78);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);padding:20px}
+  .bq.open{display:flex}
+  .bq-panel{position:relative;width:100%;max-width:540px;max-height:92vh;overflow:auto;background:#141F36;border:1px solid var(--hair-dark);border-radius:16px;padding:26px 26px 22px;color:var(--paper-on-navy);box-shadow:0 40px 90px -30px rgba(0,0,0,.8)}
+  .bq-panel.wide{max-width:760px;padding:22px 18px 14px}
+  .bq-x{position:absolute;top:14px;right:14px;width:34px;height:34px;border-radius:9px;border:1px solid var(--hair-dark);background:transparent;color:var(--paper-on-navy);font-size:18px;line-height:1;cursor:pointer}
+  .bq-bar{height:4px;background:rgba(255,255,255,.08);border-radius:4px;margin:2px 48px 20px 0;overflow:hidden}
+  .bq-bar i{display:block;height:100%;width:0;background:var(--gold);border-radius:4px;transition:width .35s ease}
+  .bq-step{font-size:12px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--muted-on-navy);margin-bottom:8px}
+  .bq-q{font-family:'Archivo',sans-serif;font-size:23px;font-weight:700;line-height:1.25;color:var(--bone);margin-bottom:18px}
+  .bq-opts{display:flex;flex-direction:column;gap:10px}
+  .bq-opt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;font:inherit;font-size:16px;color:var(--bone);background:rgba(255,255,255,.03);border:1px solid var(--hair-dark);border-radius:10px;padding:13px 14px;cursor:pointer;transition:border-color .15s,background .15s}
+  .bq-opt:hover,.bq-opt:focus-visible{border-color:var(--gold);background:rgba(217,180,92,.08);outline:none}
+  .bq-opt b{flex:none;width:26px;height:26px;border-radius:7px;border:1px solid var(--hair-dark);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--muted-on-navy);font-weight:600}
+  .bq-back{margin-top:14px;background:none;border:none;color:var(--muted-on-navy);font:inherit;font-size:14px;cursor:pointer;padding:4px 0}
+  .bq-note{font-size:15px;color:var(--muted-on-navy);line-height:1.6;margin-bottom:18px}
+  .bq-cal{background:#fff;border-radius:10px;overflow:hidden;min-height:660px}
+  .bq-cal .calendly-inline-widget{min-width:280px;height:680px}
+  @media (max-width:640px){.bq{padding:0;align-items:stretch}.bq-panel,.bq-panel.wide{max-width:none;max-height:none;height:100%;border-radius:0;padding:22px 18px 18px}.bq-q{font-size:21px}.bq-cal .calendly-inline-widget{height:calc(100vh - 150px);min-height:560px}}
+</style>
+<div class="bq" id="bq" role="dialog" aria-modal="true" aria-label="Book your free ads breakdown">
+  <div class="bq-panel" id="bqPanel">
+    <button class="bq-x" id="bqX" type="button" aria-label="Close">&#x2715;</button>
+    <div class="bq-bar"><i id="bqBar"></i></div>
+    <div id="bqBody"></div>
+  </div>
+</div>
+<script>
+(function(){
+  var CAL='https://calendly.com/joeybova/program-call';
+  var Q=[
+    {k:'rev',q:"How much is your store doing a month right now?",o:["Under $10k","$10k-$20k","$20k-$35k","$35k-$50k","$50k+"]},
+    {k:'spend',q:"How much are you spending on Meta ads a month?",o:["Under $1k","$1k-$3k","$3k-$10k","$10k+"]},
+    {k:'who',q:"Who's running your ads right now?",o:["I run them myself","An agency","A freelancer","Nobody yet"]},
+    {k:'prob',q:"What do you want fixed the most?",o:["I can't repeat my good months","My ads stopped working","I'm not sure my ads are profitable","I don't have enough new ads"]}
+  ];
+  var TOTAL=Q.length+1, step=0, ans={}, calLoaded=false;
+  var el=document.getElementById('bq'), body=document.getElementById('bqBody'), bar=document.getElementById('bqBar'), panel=document.getElementById('bqPanel');
+  function track(name){try{if(window.fbq)fbq('trackCustom',name);}catch(e){} try{if(window.clarity)clarity('event',name);}catch(e){}}
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+  function setBar(n){bar.style.width=Math.round(n/TOTAL*100)+'%';}
+  function render(){
+    panel.classList.remove('wide');
+    var item=Q[step]; setBar(step);
+    var h='<div class="bq-step">Question '+(step+1)+' of '+Q.length+'</div><div class="bq-q">'+esc(item.q)+'</div><div class="bq-opts">';
+    item.o.forEach(function(t,i){h+='<button type="button" class="bq-opt" data-v="'+esc(t)+'"><b>'+String.fromCharCode(65+i)+'</b>'+esc(t)+'</button>';});
+    h+='</div>'+(step>0?'<button type="button" class="bq-back" id="bqBack">&larr; Back</button>':'');
+    body.innerHTML=h;
+    body.querySelectorAll('.bq-opt').forEach(function(b){b.addEventListener('click',function(){pick(b.getAttribute('data-v'));});});
+    var bk=document.getElementById('bqBack'); if(bk)bk.addEventListener('click',function(){step--;render();});
+  }
+  function pick(v){
+    ans[Q[step].k]=v; track('quiz_q'+(step+1));
+    if(step===0 && v==='Under $10k'){return notFit();}
+    step++; if(step<Q.length)render(); else calendar();
+  }
+  function notFit(){
+    setBar(TOTAL); track('quiz_not_fit');
+    body.innerHTML='<div class="bq-q">You\'re a little early for the program.</div><p class="bq-note">At under $10k a month, the best move is putting more into ad spend and testing new ads. Once you\'re past $10k a month, come back and we\'ll build the full system together.</p><p class="bq-note">For now, I post free breakdowns on Instagram every week.</p><a class="btn btn-gold" href="https://www.instagram.com/joeybova_/" target="_blank" rel="noopener">Follow on Instagram</a><br><button type="button" class="bq-back" id="bqBack">&larr; Back</button>';
+    document.getElementById('bqBack').addEventListener('click',function(){step=0;render();});
+  }
+  function calendar(){
+    setBar(TOTAL-0.5); panel.classList.add('wide'); track('quiz_calendar');
+    body.innerHTML='<div class="bq-step">Last step</div><div class="bq-q">Pick a time for your free ads breakdown</div><div class="bq-cal" id="bqCal"></div><button type="button" class="bq-back" id="bqBack">&larr; Back</button>';
+    document.getElementById('bqBack').addEventListener('click',function(){step=Q.length-1;render();});
+    var p=new URLSearchParams(location.search);
+    var opts={url:CAL+'?hide_gdpr_banner=1',parentElement:document.getElementById('bqCal'),
+      prefill:{customAnswers:{a4:ans.rev||'',a5:ans.spend||''}},
+      utm:{utmSource:p.get('utm_source')||'site',utmMedium:p.get('utm_medium')||'',utmCampaign:p.get('utm_campaign')||'',utmContent:'who: '+(ans.who||''),utmTerm:'problem: '+(ans.prob||'')}};
+    function go(){window.Calendly.initInlineWidget(opts);}
+    if(window.Calendly){go();return;}
+    if(!calLoaded){calLoaded=true;var s=document.createElement('script');s.src='https://assets.calendly.com/assets/external/widget.js';s.async=true;s.onload=go;document.head.appendChild(s);}
+    else{var t=setInterval(function(){if(window.Calendly){clearInterval(t);go();}},150);}
+  }
+  window.addEventListener('message',function(e){
+    if(!e.data||typeof e.data.event!=='string'||e.data.event.indexOf('calendly.')!==0)return;
+    if(e.data.event==='calendly.date_and_time_selected')track('quiz_time_picked');
+    if(e.data.event==='calendly.event_scheduled'){track('quiz_booked');setTimeout(function(){location.href='/program/booked/';},800);}
+  });
+  function open(){step=0;ans={};render();el.classList.add('open');document.documentElement.style.overflow='hidden';track('quiz_open');}
+  function close(){el.classList.remove('open');document.documentElement.style.overflow='';}
+  document.getElementById('bqX').addEventListener('click',close);
+  el.addEventListener('click',function(e){if(e.target===el)close();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&el.classList.contains('open'))close();});
+  document.addEventListener('click',function(e){
+    var a=e.target.closest&&e.target.closest('a[href*="calendly.com"]');
+    if(!a||el.contains(a))return;
+    e.preventDefault();open();
+  });
+})();
+</script>
 </body>
 </html>

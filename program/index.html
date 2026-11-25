@@ -701,5 +701,30 @@ y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
   });
 })();
 </script>
+<script>
+(function(){
+  var link=document.querySelector('link[rel="icon"]'); if(!link)return;
+  var origHref=link.href, origTitle=document.title, badgeHref=null, timer=null, i=0;
+  var lines=['(1) Your spot is still open','Your free ads breakdown is waiting'];
+  var img=new Image();
+  img.onload=function(){
+    try{
+      var c=document.createElement('canvas'); c.width=c.height=64; var x=c.getContext('2d');
+      x.drawImage(img,0,0,64,64);
+      x.beginPath(); x.arc(48,16,14,0,Math.PI*2); x.fillStyle='#E5383B'; x.fill();
+      x.lineWidth=4; x.strokeStyle='#0B1426'; x.stroke();
+      badgeHref=c.toDataURL('image/png');
+    }catch(e){}
+  };
+  img.src=origHref;
+  function away(){
+    if(badgeHref)link.href=badgeHref;
+    i=0; document.title=lines[0];
+    clearInterval(timer); timer=setInterval(function(){i=(i+1)%lines.length; document.title=lines[i];},2000);
+  }
+  function back(){clearInterval(timer); timer=null; link.href=origHref; document.title=origTitle;}
+  document.addEventListener('visibilitychange',function(){document.hidden?away():back();});
+})();
+</script>
 </body>
 </html>
